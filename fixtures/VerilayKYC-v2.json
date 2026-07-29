@@ -9,11 +9,11 @@
     ],
     "id": "urn:uuid:6f1c2b3a-0d4e-4f5a-9b6c-7d8e9f0a1b2c",
     "type": ["VerifiableCredential", "VerilayKYC"],
-    "issuer": "did:iden3:privado:main:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo",
+    "issuer": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo",
     "issuanceDate": "2026-07-29T09:15:00Z",
     "expirationDate": "2027-07-29T09:15:00Z",
     "credentialSubject": {
-      "id": "did:iden3:privado:main:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
       "type": "VerilayKYC",
       "kycApproved": true,
       "documentCountry": "DEU",
@@ -24,7 +24,7 @@
       "type": "JSONSchema2023"
     },
     "credentialStatus": {
-      "id": "did:iden3:privado:main:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo/credentialStatus?revocationNonce=3462705184&contractAddress=80002:0x1234567890123456789012345678901234567890",
+      "id": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo/credentialStatus?revocationNonce=3462705184&contractAddress=11155111:0x1234567890123456789012345678901234567890",
       "type": "Iden3OnchainSparseMerkleTreeProof2023",
       "revocationNonce": 3462705184
     }

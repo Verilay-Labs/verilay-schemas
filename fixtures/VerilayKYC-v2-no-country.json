@@ -9,11 +9,11 @@
     ],
     "id": "urn:uuid:9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
     "type": ["VerifiableCredential", "VerilayKYC"],
-    "issuer": "did:iden3:privado:main:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo",
+    "issuer": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo",
     "issuanceDate": "2026-07-29T09:15:00Z",
     "expirationDate": "2027-07-29T09:15:00Z",
     "credentialSubject": {
-      "id": "did:iden3:privado:main:2SeUqRmfL4WkPmYtdBnQxJvCgHkZaLzWmTGXpUcWL",
+      "id": "did:iden3:eth:sepolia:2SeUqRmfL4WkPmYtdBnQxJvCgHkZaLzWmTGXpUcWL",
       "type": "VerilayKYC",
       "kycApproved": true,
       "birthday": 20040229
@@ -23,7 +23,7 @@
       "type": "JSONSchema2023"
     },
     "credentialStatus": {
-      "id": "did:iden3:privado:main:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo/credentialStatus?revocationNonce=1188213307&contractAddress=80002:0x1234567890123456789012345678901234567890",
+      "id": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo/credentialStatus?revocationNonce=1188213307&contractAddress=11155111:0x1234567890123456789012345678901234567890",
       "type": "Iden3OnchainSparseMerkleTreeProof2023",
       "revocationNonce": 1188213307
     }
