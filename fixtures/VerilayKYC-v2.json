@@ -1,0 +1,32 @@
+{
+  "_comment": "A VerilayKYC v2 credential shaped the way the issuer emits one, used by scripts/roundtrip.mjs. Not a published schema — the DIDs and the credential id are placeholders.",
+  "version": 2,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v2.json-ld"
+    ],
+    "id": "urn:uuid:6f1c2b3a-0d4e-4f5a-9b6c-7d8e9f0a1b2c",
+    "type": ["VerifiableCredential", "VerilayKYC"],
+    "issuer": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo",
+    "issuanceDate": "2026-07-29T09:15:00Z",
+    "expirationDate": "2027-07-29T09:15:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayKYC",
+      "kycApproved": true,
+      "documentCountry": "DEU",
+      "birthday": 19970517
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v2.json",
+      "type": "JSONSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo/credentialStatus?revocationNonce=3462705184&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 3462705184
+    }
+  }
+}
