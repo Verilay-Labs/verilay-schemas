@@ -40,6 +40,16 @@ and `VerilayKYC-v3.json` — landed alongside the old ones, which stay where the
 Typo fixes in prose (this README, the `vocab/` notes) are fine. Anything inside a `.json-ld` or
 `.json` is not.
 
+The rule is blanket on purpose, but the two files are not equally dangerous, and it is worth knowing
+which is which before someone talks themselves into an exception:
+
+- The **JSON-LD context** is the load-bearing one. Adding, renaming or reordering terms changes the
+  `claimPathKey`s, which breaks every credential already issued *and* the policy already registered
+  on-chain. There is no safe edit here.
+- The **JSON Schema**'s `title`/`description` prose is not part of any hash — the schema hash derives
+  only from the type IRI string. Editing prose is technically harmless. It is still forbidden,
+  because "harmless edit to a published schema" is not a judgement worth relitigating per commit.
+
 ## Schemas
 
 ### VerilayKYC v2
@@ -52,11 +62,15 @@ Typo fixes in prose (this README, the `vocab/` notes) are fine. Anything inside 
 Merklized — the context carries no `iden3_serialization` directive, so every subject field is
 addressable through the merklization root rather than being packed into fixed claim slots.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `kycApproved` | `xsd:boolean` | KYC provider returned an approved decision |
-| `documentCountry` | `xsd:string` | ISO 3166-1 alpha-3, e.g. `DEU`; string ⇒ equality/set queries only |
-| `birthday` | `xsd:integer` | `YYYYMMDD`, e.g. `19970517`; integer ⇒ range queries, which is what makes an on-chain age check possible |
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `kycApproved` | `xsd:boolean` | yes | KYC provider returned an approved decision |
+| `birthday` | `xsd:integer` | yes | `YYYYMMDD`, e.g. `19970517`; integer ⇒ range queries, which is what makes an on-chain age check possible |
+| `documentCountry` | `xsd:string` | no | ISO 3166-1 alpha-3, e.g. `DEU`; string ⇒ equality/set queries only |
+
+`documentCountry` is optional because the KYC provider does not always return a country and no
+policy queries it. Omitting it is safe: `claimPathKey` derives from the JSON-LD context path, not
+from the JSON Schema's `required` list, so an absent field is simply not in the merklization tree.
 
 ### There is no v1
 

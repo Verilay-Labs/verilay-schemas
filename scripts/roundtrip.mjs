@@ -69,26 +69,48 @@ for (const file of readdirSync(join(REPO, "fixtures")).sort()) {
   const subject =
     expanded["https://www.w3.org/2018/credentials#credentialSubject"][0];
 
-  // Anything that failed to expand is simply absent from the result — compare against the fields
-  // the JSON Schema declares rather than trusting whatever came back.
-  const declared = Object.keys(schema.properties.credentialSubject.properties)
-    .filter((f) => f !== "id")
+  // Anything that failed to expand is simply absent from the result, so compare against the fields
+  // we know the credential carries rather than trusting whatever came back. Not every declared field
+  // is required — the KYC provider does not always return a country — so drive off what is present.
+  const declared = new Set(
+    Object.keys(schema.properties.credentialSubject.properties).filter(
+      (f) => f !== "id",
+    ),
+  );
+  const present = Object.keys(credential.credentialSubject)
+    .filter((f) => f !== "id" && f !== "type")
     .sort();
   const typeIri = schema.$metadata.uris.jsonLdType;
-  const vocabBase = `${typeIri.split("#")[0].replace(RAW_BASE, "")}`;
+  const contextFile = typeIri.split("#")[0].replace(RAW_BASE, "");
 
-  for (const field of declared) {
+  for (const field of present) {
+    // ajv lets an undeclared field through (no additionalProperties: false), but it would still be
+    // merklized — into a tree the published schema never described.
+    check(
+      declared.has(field),
+      `${file}: '${field}' is not declared in ${schemaFile}`,
+    );
+
     const iri = Object.keys(subject).find((k) => k.endsWith(`#${field}`));
     check(
       iri !== undefined,
       `${file}: '${field}' did not expand to an absolute IRI — it will be missing from the ` +
-        `merklization tree. Check its term definition in the context for ${vocabBase}.`,
+        `merklization tree. Check its term definition in ${contextFile}.`,
     );
     if (iri === undefined) continue;
     check(
       subject[iri][0]["@value"] === credential.credentialSubject[field],
       `${file}: '${field}' expanded to ${JSON.stringify(subject[iri][0]["@value"])}, ` +
         `expected ${JSON.stringify(credential.credentialSubject[field])}`,
+    );
+  }
+
+  // An omitted optional field must be genuinely absent from the tree, not defaulted into it by some
+  // term definition — that is what makes omitting it safe for a registered policy.
+  for (const field of [...declared].filter((f) => !present.includes(f)).sort()) {
+    check(
+      !Object.keys(subject).some((k) => k.endsWith(`#${field}`)),
+      `${file}: '${field}' is absent from the credential but still appears in the expansion`,
     );
   }
 

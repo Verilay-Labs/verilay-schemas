@@ -101,10 +101,19 @@ for schema_path in sorted(REPO.glob("*.json")):
         f"{ctx_path.name} {sorted(defined)}",
     )
 
+    # Fields may legitimately be optional — the KYC provider does not always return every attribute,
+    # and an absent field is simply not in the merklization tree. What must not happen is `required`
+    # naming something the schema does not declare: that is a typo no validator would ever fire on,
+    # because the field can never be present to be checked.
+    required = set(subject.get("required", []))
     check(
-        set(subject.get("required", [])) == declared | {"id"},
-        f"{name}: credentialSubject.required must list id plus every field, got "
-        f"{sorted(subject.get('required', []))}",
+        "id" in required,
+        f"{name}: credentialSubject.required must include id",
+    )
+    check(
+        required <= declared | {"id"},
+        f"{name}: credentialSubject.required names undeclared fields "
+        f"{sorted(required - declared - {'id'})}",
     )
 
     # A term's XSD type and its JSON Schema type describe the same value; if they disagree the

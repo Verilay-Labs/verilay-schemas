@@ -131,7 +131,6 @@
       "required": [
         "id",
         "kycApproved",
-        "documentCountry",
         "birthday"
       ],
       "properties": {
@@ -147,7 +146,7 @@
         },
         "documentCountry": {
           "title": "Document Country",
-          "description": "ISO 3166-1 alpha-3 country code of the identity document used for KYC, e.g. \"DEU\".",
+          "description": "ISO 3166-1 alpha-3 country code of the identity document used for KYC, e.g. \"DEU\". Optional: the KYC provider does not always return a country, and no policy queries it. An absent value is simply not in the merklization tree.",
           "type": "string"
         },
         "birthday": {

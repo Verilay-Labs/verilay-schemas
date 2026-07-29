@@ -19,10 +19,14 @@ from the mere existence of the credential.
 
 ## documentCountry
 
-`xsd:string`
+`xsd:string` — **optional**
 
 ISO 3166-1 alpha-3 country code of the identity document the subject passed KYC with, e.g. `"DEU"`.
 This is the country that *issued the document*, not the subject's country of residence.
+
+Optional because the KYC provider does not always return one — thin applicant data is normal,
+particularly in sandbox — and no policy queries this field. A credential without it is valid, and
+the field is then simply absent from the merklization tree rather than present-and-empty.
 
 Because the field is a string, it is merklized as a hashed value: equality and set-membership
 queries (`$eq`, `$in`, `$nin`) work against it, ordering comparisons do not.
