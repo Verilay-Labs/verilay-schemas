@@ -1,0 +1,24 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Structural consistency (context vs JSON Schema)
+        run: python3 scripts/validate.py
+
+      - name: Round-trip a sample credential through both documents
+        run: |
+          npm install --no-save jsonld@8 ajv@8 ajv-formats@3
+          node scripts/roundtrip.mjs
