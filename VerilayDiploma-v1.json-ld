@@ -1,0 +1,41 @@
+{
+  "@context": [
+    {
+      "@version": 1.1,
+      "@protected": true,
+      "id": "@id",
+      "type": "@type",
+      "VerilayDiploma": {
+        "@id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld#VerilayDiploma",
+        "@context": {
+          "@version": 1.1,
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "verilay-vocab": "https://github.com/Verilay-Labs/verilay-schemas/blob/main/vocab/VerilayDiploma.md#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+          "institution": {
+            "@id": "verilay-vocab:institution",
+            "@type": "xsd:string"
+          },
+          "degree": {
+            "@id": "verilay-vocab:degree",
+            "@type": "xsd:string"
+          },
+          "degreeLevel": {
+            "@id": "verilay-vocab:degreeLevel",
+            "@type": "xsd:integer"
+          },
+          "fieldOfStudy": {
+            "@id": "verilay-vocab:fieldOfStudy",
+            "@type": "xsd:string"
+          },
+          "awardedAt": {
+            "@id": "verilay-vocab:awardedAt",
+            "@type": "xsd:integer"
+          }
+        }
+      }
+    }
+  ]
+}

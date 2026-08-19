@@ -16,15 +16,15 @@ credential points at the **JSON Schema** (`.json`); the credential's `@context` 
 
 ## Why this repo is public
 
-Everything here is field-name vocabulary and types — `kycApproved`, `documentCountry`, `birthday`.
-No keys, no endpoints, no personal data. It has to be public because:
+Everything here is field-name vocabulary and types — `kycApproved`, `birthday`, `companyId`,
+`degreeLevel`. No keys, no endpoints, no personal data. It has to be public because:
 
 - the issuer resolves the context server-side to merklize a credential;
 - a holder's browser may fetch the context while producing a proof;
 - `credentialSchema.id` is embedded in every issued credential and must resolve for anyone holding
   one;
 - the on-chain policy's schema hash is derived from the type IRI in the context, so a third party
-  cannot verify what an age query actually asserts without reading it.
+  cannot verify what a policy actually asserts without reading it.
 
 Same posture as [`iden3/claim-schema-vocab`](https://github.com/iden3/claim-schema-vocab).
 
@@ -52,15 +52,72 @@ which is which before someone talks themselves into an exception:
 
 ## Schemas
 
+Every type here is **merklized** — no context carries an `iden3_serialization` directive, so every
+subject field is addressable through the merklization root rather than being packed into fixed claim
+slots.
+
+Dates are integers in `YYYYMMDD` form throughout (`birthday`, `employedFrom`, `employedTo`,
+`awardedAt`). That is not cosmetic: an integer can be range-queried on chain, and a hashed string can
+only be tested for equality and set membership. Any field a policy needs to compare with `<` or `>`
+has to be an integer here, and choosing wrong is unfixable without a new schema version.
+
+### VerilayJobHistory v1
+
+- Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json-ld>
+- JSON Schema: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json>
+- Type IRI: `https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json-ld#VerilayJobHistory`
+- Vocabulary: [`vocab/VerilayJobHistory.md`](vocab/VerilayJobHistory.md)
+
+A company registered in Verilay attests that the subject worked there, in what role, over which
+dates. This is the credential that gates review submission.
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `companyId` | `xsd:string` | yes | The company's Verilay account `user_uuid`, canonical lowercase hyphenated form |
+| `role` | `xsd:string` | yes | Job title as attested, free text |
+| `employedFrom` | `xsd:integer` | yes | `YYYYMMDD`; integer ⇒ range queries |
+| `employedTo` | `xsd:integer` | no | `YYYYMMDD`; **absent means employment had not ended at attestation** |
+
+`companyId` is the load-bearing field: it is the same identifier `verilay-user-service` exposes on
+the public business record and the same one the reviews registry keys on, which is what lets a review
+be gated on "this reviewer worked at *this* company". It is the account UUID and not a company name
+or domain because names change, domains are shared and re-registered, and neither is a stable join
+key — the display name is resolved from the registry instead of frozen into the credential.
+
+A candidate holds **one of these per employer**, so several at once. Nothing here is keyed on
+`(subject DID, type)` alone; `companyId` is what distinguishes instances, and any store holding them
+must qualify its key by it.
+
+⚠️ A policy meaning "employment has ended" must handle `employedTo` being absent rather than assuming
+it is there — `claimPathNotExists` is part of the `queryHash` for exactly this case. A range query
+over `employedTo` alone silently excludes every ongoing employment.
+
+### VerilayDiploma v1
+
+- Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld>
+- JSON Schema: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json>
+- Type IRI: `https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld#VerilayDiploma`
+- Vocabulary: [`vocab/VerilayDiploma.md`](vocab/VerilayDiploma.md)
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `institution` | `xsd:string` | yes | Awarding institution name; display string, not a resolvable id |
+| `degree` | `xsd:string` | yes | Human-readable title, e.g. `Master of Science` — **display only, do not query** |
+| `degreeLevel` | `xsd:integer` | yes | ISCED 2011 level: 6 bachelor's, 7 master's, 8 doctoral |
+| `fieldOfStudy` | `xsd:string` | no | Subject area as awarded |
+| `awardedAt` | `xsd:integer` | yes | `YYYYMMDD`; integer ⇒ range queries |
+
+`degreeLevel` is the queryable form of `degree`, and the reason it is an integer. "At least a
+bachelor's" is `degreeLevel >= 6`, a range query the on-chain verifier can evaluate; no free-text
+title could express that, because hashed string values support only equality and set membership and
+the same policy would have to enumerate every title in every country meaning "bachelor's".
+
 ### VerilayKYC v2
 
 - Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v2.json-ld>
 - JSON Schema: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v2.json>
 - Type IRI: `https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v2.json-ld#VerilayKYC`
 - Vocabulary: [`vocab/VerilayKYC.md`](vocab/VerilayKYC.md)
-
-Merklized — the context carries no `iden3_serialization` directive, so every subject field is
-addressable through the merklization root rather than being packed into fixed claim slots.
 
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
@@ -72,19 +129,36 @@ addressable through the merklization root rather than being packed into fixed cl
 policy queries it. Omitting it is safe: `claimPathKey` derives from the JSON-LD context path, not
 from the JSON Schema's `required` list, so an absent field is simply not in the merklization tree.
 
-### There is no v1
+### There is no VerilayKYC v1
 
 `VerilayKYC-v1.json-ld` was referenced by the issuer and the frontend before this repo existed, so
 that URL always returned 404 and **nothing valid was ever issued against it**. There is no
 back-compat to preserve and no v1 file will be published. Any credential still carrying a v1
 `credentialSchema.id` is to be reissued against v2.
 
-## Consumers
+## Vendored copies must be byte-identical
 
-Any local copy of a context — for example a frontend bundling it to avoid a network fetch during
-proving — must be **byte-identical** to the published file. The schema hash is derived from the
-document; a stray whitespace difference produces a different hash and the on-chain query stops
-matching.
+Several repos keep a local copy of a context rather than fetching it at runtime — an issuer embeds
+it, a deploy script loads it to derive query parameters, a frontend serves it to avoid a network
+fetch while proving. **Every one of those copies must be byte-identical to the published file.**
+
+This is not a style rule. The `schemaHash` and the `claimPathKey`s are derived from the document
+bytes and are committed inside the on-chain `queryHash`. `setRequests` is irreversible and a
+requestId can never be re-registered, so a single whitespace difference in a single copy is an
+unrecoverable mismatch: proving fails, and the registered request cannot be corrected.
+
+[`SHA256SUMS`](SHA256SUMS) exists so that no repo has to assert this by eye. It is the published
+digest of every document here, and CI fails if it is stale or does not cover them all.
+
+```sh
+# in a repo that vendors a context — fetch the manifest, check the local copy against it
+curl -fsSL https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/SHA256SUMS -o SHA256SUMS
+sha256sum -c --ignore-missing SHA256SUMS      # shasum -a 256 -c on macOS
+```
+
+Assert against **this** manifest, not against a value your own code recomputes — a test that checks a
+derivation against your re-derivation of it passes just as happily when both sides are wrong
+together.
 
 ## Checks
 
@@ -93,14 +167,22 @@ that merklizes a field the verifier cannot see, or a proof that stops matching. 
 CI on every pull request:
 
 ```sh
-python3 scripts/validate.py    # context ↔ JSON Schema agree on fields, types and URIs
+python3 scripts/validate.py    # context ↔ JSON Schema agree on fields, types and URIs;
+                               # SHA256SUMS covers every document and is current
 
 npm install --no-save jsonld@8 ajv@8 ajv-formats@3
 node scripts/roundtrip.mjs     # a sample credential validates, then expands with every field intact
 ```
 
-`fixtures/` holds one sample credential per schema version, shaped the way the issuer emits them.
-They are test inputs, not published documents.
+`fixtures/` holds sample credentials shaped the way the issuers emit them — including one per type
+with its optional fields absent, which is the case that is easy to get wrong and expensive to
+discover late. They are test inputs, not published documents.
+
+After changing or adding a document, regenerate the manifest:
+
+```sh
+shasum -a 256 *.json *.json-ld > SHA256SUMS
+```
 
 ## Licence
 

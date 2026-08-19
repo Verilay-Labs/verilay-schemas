@@ -1,0 +1,32 @@
+{
+  "_comment": "A VerilayDiploma v1 credential with fieldOfStudy absent — not every qualification names a subject area. It must validate. Not a published schema; the DIDs and the credential id are placeholders.",
+  "version": 1,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld"
+    ],
+    "id": "urn:uuid:4a5b6c7d-8e9f-4012-b3c4-d5e6f7a8b9c0",
+    "type": ["VerifiableCredential", "VerilayDiploma"],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-08-19T10:15:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Universiteit van Amsterdam",
+      "degree": "Bachelor of Arts",
+      "degreeLevel": 6,
+      "awardedAt": 20160630
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json",
+      "type": "JSONSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=2288401173&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 2288401173
+    }
+  }
+}

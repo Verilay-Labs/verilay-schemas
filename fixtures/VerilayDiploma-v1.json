@@ -1,0 +1,33 @@
+{
+  "_comment": "A VerilayDiploma v1 credential, shaped the way the issuer emits one. Not a published schema — the DIDs and the credential id are placeholders.",
+  "version": 1,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld"
+    ],
+    "id": "urn:uuid:3f4a5b6c-7d8e-4f90-a1b2-c3d4e5f6a7b8",
+    "type": ["VerifiableCredential", "VerilayDiploma"],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-08-19T10:10:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Technical University of Munich",
+      "degree": "Master of Science",
+      "degreeLevel": 7,
+      "fieldOfStudy": "Computer Science",
+      "awardedAt": 20190715
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json",
+      "type": "JSONSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=3055128744&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 3055128744
+    }
+  }
+}

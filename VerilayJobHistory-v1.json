@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$metadata": {
+    "type": "VerilayJobHistory",
+    "version": "1.0",
+    "uris": {
+      "jsonLdContext": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json-ld",
+      "jsonLdType": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json-ld#VerilayJobHistory",
+      "jsonSchema": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json"
+    }
+  },
+  "title": "Verilay Job History Credential v1",
+  "description": "Credential asserting that a company registered in Verilay attested to the subject's employment: which company, in what role, over which dates. This is the credential that gates review submission, so companyId is the join key between the credential and the reviews registry. Merklized: no iden3_serialization directive, every subject field is addressable through the merklization root.",
+  "type": "object",
+  "required": [
+    "@context",
+    "id",
+    "type",
+    "issuanceDate",
+    "credentialSubject",
+    "credentialSchema",
+    "credentialStatus",
+    "issuer"
+  ],
+  "properties": {
+    "@context": {
+      "type": [
+        "string",
+        "array",
+        "object"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": [
+        "string",
+        "array"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "issuer": {
+      "type": [
+        "string",
+        "object"
+      ],
+      "format": "uri",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "credentialSchema": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "credentialStatus": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        },
+        "revocationNonce": {
+          "type": "integer"
+        }
+      }
+    },
+    "subjectPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "merklizationRootPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "revNonce": {
+      "type": "integer"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "updatable": {
+      "type": "boolean"
+    },
+    "credentialSubject": {
+      "type": "object",
+      "required": [
+        "id",
+        "companyId",
+        "role",
+        "employedFrom"
+      ],
+      "properties": {
+        "id": {
+          "title": "Credential Subject ID",
+          "type": "string",
+          "format": "uri"
+        },
+        "companyId": {
+          "title": "Company ID",
+          "description": "The attesting company's Verilay account user_uuid, in canonical lowercase 8-4-4-4-12 hyphenated form. This is the identifier verilay-user-service exposes on the public business record and the one the reviews registry keys on \u2014 not a company name, domain or display label. String, so it supports equality and set-membership queries ($eq, $in, $nin) only.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "role": {
+          "title": "Role",
+          "description": "Job title the company attested to, as free text, e.g. \"Senior Backend Engineer\". Display and review-template use; string, so equality and set-membership queries only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "employedFrom": {
+          "title": "Employed From",
+          "description": "First day of the employment period, encoded as the integer YYYYMMDD, e.g. 20210301. Integer encoding is what makes tenure and date-window checks expressible as on-chain range queries.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        },
+        "employedTo": {
+          "title": "Employed To",
+          "description": "Last day of the employment period, encoded as the integer YYYYMMDD. Optional: absent means the employment had not ended when the company attested. A policy that needs \"employment has ended\" must handle absence explicitly \u2014 claimPathNotExists is part of the queryHash for exactly this case.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        }
+      }
+    }
+  }
+}

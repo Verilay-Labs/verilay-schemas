@@ -8,6 +8,7 @@ the symptom is a proof that silently stops matching. So the invariants are check
 Run: python3 scripts/validate.py
 """
 
+import hashlib
 import json
 import re
 import sys
@@ -155,6 +156,37 @@ for schema_path in sorted(REPO.glob("*.json")):
                 f"{ctx_path.name}: prefix {prefix!r} points at {target!r}, which is not a file in "
                 "this repo",
             )
+
+# SHA256SUMS is what the repos vendoring these documents assert against, so it has to cover every
+# published document and be current. A manifest that silently under-covers is worse than none: the
+# consuming repo's integrity test passes because the file it drifted from was never listed.
+manifest_path = REPO / "SHA256SUMS"
+check(manifest_path.is_file(), "SHA256SUMS is missing")
+if manifest_path.is_file():
+    manifest = {}
+    for line in manifest_path.read_text().splitlines():
+        if line.strip():
+            digest, _, filename = line.partition("  ")
+            manifest[filename] = digest
+
+    published = {
+        path.name
+        for path in list(REPO.glob("*.json")) + list(REPO.glob("*.json-ld"))
+    }
+    check(
+        published == set(manifest),
+        f"SHA256SUMS does not cover exactly the published documents: "
+        f"missing {sorted(published - set(manifest))}, "
+        f"stale {sorted(set(manifest) - published)}. Regenerate with "
+        f"`shasum -a 256 *.json *.json-ld > SHA256SUMS`.",
+    )
+
+    for filename in sorted(published & set(manifest)):
+        actual = hashlib.sha256((REPO / filename).read_bytes()).hexdigest()
+        check(
+            actual == manifest[filename],
+            f"SHA256SUMS is stale for {filename}: recorded {manifest[filename]}, actual {actual}",
+        )
 
 if errors:
     for error in errors:
