@@ -38,13 +38,19 @@ ISCED 2011 level of the qualification:
 
 | Value | Level |
 |-------|-------|
+| `3` | Upper secondary — a school-leaving diploma |
+| `4` | Post-secondary non-tertiary |
 | `5` | Short-cycle tertiary |
 | `6` | Bachelor's or equivalent |
 | `7` | Master's or equivalent |
 | `8` | Doctoral or equivalent |
 
-Lower ISCED levels (`0`–`4`, early childhood through post-secondary non-tertiary) are permitted by
-the schema but are not what this credential is normally issued for.
+**The full `0`–`8` range is allowed deliberately, not by oversight.** A school-leaving diploma is a
+diploma, and a company asking "has completed secondary education" is a real policy. Restricting the
+schema to tertiary levels would make that unaskable — and the range cannot be widened afterwards,
+because widening it is a new schema version, new context URL, new requestIds and every credential
+reissued. Permissive costs nothing here: the ordering that makes `>= 6` mean "at least a bachelor's"
+holds across the whole range.
 
 This is the **queryable** form of `degree`, and the reason the type is an integer rather than a
 string. "At least a bachelor's" is `degreeLevel >= 6` — a range query the on-chain verifier can

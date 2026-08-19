@@ -128,6 +128,7 @@
     },
     "credentialSubject": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "id",
         "companyId",
@@ -139,6 +140,16 @@
           "title": "Credential Subject ID",
           "type": "string",
           "format": "uri"
+        },
+        "type": {
+          "title": "Credential Subject Type",
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          }
         },
         "companyId": {
           "title": "Company ID",

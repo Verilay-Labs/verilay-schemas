@@ -74,7 +74,7 @@ for (const file of readdirSync(join(REPO, "fixtures")).sort()) {
   // is required — the KYC provider does not always return a country — so drive off what is present.
   const declared = new Set(
     Object.keys(schema.properties.credentialSubject.properties).filter(
-      (f) => f !== "id",
+      (f) => f !== "id" && f !== "type",
     ),
   );
   const present = Object.keys(credential.credentialSubject)
@@ -84,8 +84,10 @@ for (const file of readdirSync(join(REPO, "fixtures")).sort()) {
   const contextFile = typeIri.split("#")[0].replace(RAW_BASE, "");
 
   for (const field of present) {
-    // ajv lets an undeclared field through (no additionalProperties: false), but it would still be
-    // merklized — into a tree the published schema never described.
+    // An undeclared field is DROPPED by expansion, not merklized: it has no term in the context,
+    // so the issuer would believe it issued an attribute that never reached the tree. The newer
+    // schemas close credentialSubject so ajv rejects it outright; this catches it for VerilayKYC v2,
+    // which is published and can no longer be tightened.
     check(
       declared.has(field),
       `${file}: '${field}' is not declared in ${schemaFile}`,

@@ -103,7 +103,7 @@ over `employedTo` alone silently excludes every ongoing employment.
 |-------|------|----------|-------|
 | `institution` | `xsd:string` | yes | Awarding institution name; display string, not a resolvable id |
 | `degree` | `xsd:string` | yes | Human-readable title, e.g. `Master of Science` — **display only, do not query** |
-| `degreeLevel` | `xsd:integer` | yes | ISCED 2011 level: 6 bachelor's, 7 master's, 8 doctoral |
+| `degreeLevel` | `xsd:integer` | yes | ISCED 2011 level: 3 upper secondary, 6 bachelor's, 7 master's, 8 doctoral |
 | `fieldOfStudy` | `xsd:string` | no | Subject area as awarded |
 | `awardedAt` | `xsd:integer` | yes | `YYYYMMDD`; integer ⇒ range queries |
 
