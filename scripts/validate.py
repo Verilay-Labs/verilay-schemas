@@ -8,6 +8,7 @@ the symptom is a proof that silently stops matching. So the invariants are check
 Run: python3 scripts/validate.py
 """
 
+import hashlib
 import json
 import re
 import sys
@@ -15,6 +16,15 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 RAW_BASE = "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/"
+
+# A published document is named <Type>-v<N>.json or <Type>-v<N>.json-ld. Matching on that rather than
+# on "*.json at the root" keeps an incidental root file — a package.json, a tsconfig — from being
+# treated as a schema pair and demanded in SHA256SUMS.
+DOCUMENT = re.compile(r"^[A-Za-z][A-Za-z0-9]*-v\d+\.json(-ld)?$")
+
+
+def published_documents():
+    return sorted(p for p in REPO.iterdir() if p.is_file() and DOCUMENT.match(p.name))
 
 errors = []
 
@@ -31,7 +41,7 @@ def raw_url_to_path(url):
     return REPO / url[len(RAW_BASE):].split("#")[0]
 
 
-for schema_path in sorted(REPO.glob("*.json")):
+for schema_path in [p for p in published_documents() if p.suffix == ".json"]:
     name = schema_path.name
     schema = json.loads(schema_path.read_text())
 
@@ -93,7 +103,7 @@ for schema_path in sorted(REPO.glob("*.json")):
     # Every subject field the JSON Schema declares must have a term in the context, and vice versa —
     # a field defined in only one of the two is invisible to half the stack.
     subject = schema["properties"]["credentialSubject"]
-    declared = set(subject["properties"]) - {"id"}
+    declared = set(subject["properties"]) - {"id", "type"}
     defined = {k for k, v in terms.items() if isinstance(v, dict) and k not in ("id", "type")}
     check(
         declared == defined,
@@ -114,6 +124,20 @@ for schema_path in sorted(REPO.glob("*.json")):
         required <= declared | {"id"},
         f"{name}: credentialSubject.required names undeclared fields "
         f"{sorted(required - declared - {'id'})}",
+    )
+
+    # An undeclared subject field is dropped by JSON-LD expansion rather than merklized, so the
+    # issuer would believe it issued an attribute that never reached the tree and no policy could
+    # ever match. Closing credentialSubject turns that silence into a validation failure.
+    check(
+        subject.get("additionalProperties") is False
+        or name.startswith("VerilayKYC-v2"),
+        f"{name}: credentialSubject must set additionalProperties: false",
+    )
+    check(
+        "type" in subject["properties"] or name.startswith("VerilayKYC-v2"),
+        f"{name}: credentialSubject must declare 'type' — every issued credential carries it, and "
+        "additionalProperties: false would otherwise reject a well-formed credential",
     )
 
     # A term's XSD type and its JSON Schema type describe the same value; if they disagree the
@@ -155,6 +179,34 @@ for schema_path in sorted(REPO.glob("*.json")):
                 f"{ctx_path.name}: prefix {prefix!r} points at {target!r}, which is not a file in "
                 "this repo",
             )
+
+# SHA256SUMS is what the repos vendoring these documents assert against, so it has to cover every
+# published document and be current. A manifest that silently under-covers is worse than none: the
+# consuming repo's integrity test passes because the file it drifted from was never listed.
+manifest_path = REPO / "SHA256SUMS"
+check(manifest_path.is_file(), "SHA256SUMS is missing")
+if manifest_path.is_file():
+    manifest = {}
+    for line in manifest_path.read_text().splitlines():
+        if line.strip():
+            digest, _, filename = line.partition("  ")
+            manifest[filename] = digest
+
+    published = {path.name for path in published_documents()}
+    check(
+        published == set(manifest),
+        f"SHA256SUMS does not cover exactly the published documents: "
+        f"missing {sorted(published - set(manifest))}, "
+        f"stale {sorted(set(manifest) - published)}. Regenerate with "
+        f"`shasum -a 256 *.json *.json-ld > SHA256SUMS`.",
+    )
+
+    for filename in sorted(published & set(manifest)):
+        actual = hashlib.sha256((REPO / filename).read_bytes()).hexdigest()
+        check(
+            actual == manifest[filename],
+            f"SHA256SUMS is stale for {filename}: recorded {manifest[filename]}, actual {actual}",
+        )
 
 if errors:
     for error in errors:

@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$metadata": {
+    "type": "VerilayDiploma",
+    "version": "1.0",
+    "uris": {
+      "jsonLdContext": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld",
+      "jsonLdType": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json-ld#VerilayDiploma",
+      "jsonSchema": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v1.json"
+    }
+  },
+  "title": "Verilay Diploma Credential v1",
+  "description": "Credential asserting that the subject holds an educational qualification: which institution awarded it, what it is, at which ISCED level, and when. Merklized: no iden3_serialization directive, every subject field is addressable through the merklization root.",
+  "type": "object",
+  "required": [
+    "@context",
+    "id",
+    "type",
+    "issuanceDate",
+    "credentialSubject",
+    "credentialSchema",
+    "credentialStatus",
+    "issuer"
+  ],
+  "properties": {
+    "@context": {
+      "type": [
+        "string",
+        "array",
+        "object"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": [
+        "string",
+        "array"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "issuer": {
+      "type": [
+        "string",
+        "object"
+      ],
+      "format": "uri",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "credentialSchema": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "credentialStatus": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        },
+        "revocationNonce": {
+          "type": "integer"
+        }
+      }
+    },
+    "subjectPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "merklizationRootPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "revNonce": {
+      "type": "integer"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "updatable": {
+      "type": "boolean"
+    },
+    "credentialSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "institution",
+        "degree",
+        "degreeLevel",
+        "awardedAt"
+      ],
+      "properties": {
+        "id": {
+          "title": "Credential Subject ID",
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "title": "Credential Subject Type",
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "institution": {
+          "title": "Institution",
+          "description": "Name of the awarding institution as it appears on the diploma, e.g. \"Technical University of Munich\". Institutions are not Verilay accounts and there is no institution registry, so this is a display string rather than a resolvable identifier; equality and set-membership queries only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "degree": {
+          "title": "Degree",
+          "description": "Human-readable title of the qualification, e.g. \"Master of Science\". For display and for a reader to see what was actually awarded. Query degreeLevel instead \u2014 free-text titles vary by country and institution and will not match reliably.",
+          "type": "string",
+          "minLength": 1
+        },
+        "degreeLevel": {
+          "title": "Degree Level",
+          "description": "ISCED 2011 level of the qualification: 3 upper secondary (a school-leaving diploma), 5 short-cycle tertiary, 6 bachelor's or equivalent, 7 master's or equivalent, 8 doctoral or equivalent. This is the queryable form of \"degree\" \u2014 an integer, so \"at least a bachelor's\" is a range query the on-chain verifier can evaluate, which no free-text title could express. The full 0-8 range is allowed deliberately: a school-leaving diploma is a diploma, and the range cannot be widened later without a new schema version and reissuance.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "fieldOfStudy": {
+          "title": "Field of Study",
+          "description": "Subject area of the qualification as awarded, e.g. \"Computer Science\". Optional \u2014 not every qualification names one. Free text, so equality and set-membership queries only, and a policy relying on it must enumerate the spellings it accepts.",
+          "type": "string",
+          "minLength": 1
+        },
+        "awardedAt": {
+          "title": "Awarded At",
+          "description": "Date the qualification was awarded, encoded as the integer YYYYMMDD, e.g. 20190715. Integer encoding makes \"graduated after\" a range query.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        }
+      }
+    }
+  }
+}

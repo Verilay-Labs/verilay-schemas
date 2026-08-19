@@ -15,8 +15,11 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Structural consistency (context vs JSON Schema)
+      - name: Structural consistency (context vs JSON Schema, SHA256SUMS coverage)
         run: python3 scripts/validate.py
+
+      - name: Published digests match SHA256SUMS
+        run: sha256sum -c SHA256SUMS
 
       - name: Round-trip a sample credential through both documents
         run: |

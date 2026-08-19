@@ -1,0 +1,37 @@
+{
+  "@context": [
+    {
+      "@version": 1.1,
+      "@protected": true,
+      "id": "@id",
+      "type": "@type",
+      "VerilayJobHistory": {
+        "@id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v1.json-ld#VerilayJobHistory",
+        "@context": {
+          "@version": 1.1,
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "verilay-vocab": "https://github.com/Verilay-Labs/verilay-schemas/blob/main/vocab/VerilayJobHistory.md#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+          "companyId": {
+            "@id": "verilay-vocab:companyId",
+            "@type": "xsd:string"
+          },
+          "role": {
+            "@id": "verilay-vocab:role",
+            "@type": "xsd:string"
+          },
+          "employedFrom": {
+            "@id": "verilay-vocab:employedFrom",
+            "@type": "xsd:integer"
+          },
+          "employedTo": {
+            "@id": "verilay-vocab:employedTo",
+            "@type": "xsd:integer"
+          }
+        }
+      }
+    }
+  ]
+}
