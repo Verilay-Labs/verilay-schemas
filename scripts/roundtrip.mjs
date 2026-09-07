@@ -28,6 +28,11 @@ const check = (ok, message) => {
 
 // Serve any URL under this repo's raw base from disk, so the check passes before the branch is
 // merged and does not depend on the network for our own documents.
+//
+// Remote contexts (credentials/v1, iden3proofs) are fetched once per run and reused across fixtures:
+// every fixture references the same two, and w3.org answers a burst of identical requests with 429,
+// which shows up as a spurious "not a valid JSON-LD object" failure on whichever fixture ran last.
+const remote = new Map();
 const documentLoader = async (url) => {
   if (url.startsWith(RAW_BASE)) {
     return {
@@ -36,11 +41,18 @@ const documentLoader = async (url) => {
       document: read(url.slice(RAW_BASE.length).split("#")[0]),
     };
   }
-  const response = await fetch(url, {
-    headers: { accept: "application/ld+json, application/json" },
-  });
-  if (!response.ok) throw new Error(`${url} -> HTTP ${response.status}`);
-  return { contextUrl: null, documentUrl: url, document: await response.json() };
+  if (!remote.has(url)) {
+    remote.set(
+      url,
+      fetch(url, { headers: { accept: "application/ld+json, application/json" } }).then(
+        async (response) => {
+          if (!response.ok) throw new Error(`${url} -> HTTP ${response.status}`);
+          return response.json();
+        },
+      ),
+    );
+  }
+  return { contextUrl: null, documentUrl: url, document: await remote.get(url) };
 };
 
 const ajv = new Ajv({ strict: false, allErrors: true });

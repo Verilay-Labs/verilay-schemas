@@ -34,8 +34,9 @@ Same posture as [`iden3/claim-schema-vocab`](https://github.com/iden3/claim-sche
 IRI in its context, and both the issuer and the on-chain policy pin that hash. Changing a published
 file silently invalidates every credential and policy that referenced it.
 
-Adding, removing, renaming or retyping a field means **a new version file** — `VerilayKYC-v3.json-ld`
-and `VerilayKYC-v3.json` — landed alongside the old ones, which stay where they are forever.
+Adding, removing, renaming or retyping a field means **a new version file** landed alongside the old
+ones, which stay where they are forever. `VerilayKYC-v3` is exactly that: v2 plus one field, published
+as a new pair, with v2 untouched and still pinned by everything that was registered against it.
 
 Typo fixes in prose (this README, the `vocab/` notes) are fine. Anything inside a `.json-ld` or
 `.json` is not.
@@ -112,6 +113,44 @@ bachelor's" is `degreeLevel >= 6`, a range query the on-chain verifier can evalu
 title could express that, because hashed string values support only equality and set membership and
 the same policy would have to enumerate every title in every country meaning "bachelor's".
 
+### VerilayKYC v3
+
+- Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json-ld>
+- JSON Schema: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json>
+- Type IRI: `https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json-ld#VerilayKYC`
+- Vocabulary: [`vocab/VerilayKYC.md`](vocab/VerilayKYC.md)
+
+**This is the version new KYC issuance uses.** v3 is v2 plus `fullName`, so the person can see in
+their vault exactly what an issuer-attested disclosure statement would share with an employer, and so
+selective disclosure of the name later has a field to disclose.
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `kycApproved` | `xsd:boolean` | yes | KYC provider returned an approved decision |
+| `birthday` | `xsd:integer` | yes | `YYYYMMDD`, e.g. `19970517`; integer ⇒ range queries, which is what makes an on-chain age check possible |
+| `documentCountry` | `xsd:string` | no | ISO 3166-1 alpha-3, e.g. `DEU`; string ⇒ equality/set queries only |
+| `fullName` | `xsd:string` | yes | Full legal name as verified from the identity document, one display string, e.g. `Jane Doe`; **display and disclosure only, no policy queries it** |
+
+`fullName` is required because the version exists to carry it — a v3 credential without a name is a
+v2 credential and should be issued as one. `documentCountry` stays optional for the same reason it
+was in v2.
+
+#### Which version does what
+
+A new context is a new type IRI, and therefore a **new `schemaHash` and new `claimPathKey`s** — the
+same field name under v2 and v3 merklizes to different keys. That is what makes the versions
+independent, and it is why the split below is not optional:
+
+| Use | Version | Why |
+|-----|---------|-----|
+| New `VerilayKYC` issuance by the Sumsub issuer | **v3** | Carries `fullName` |
+| Every existing on-chain KYC request (`setRequests` age/KYC policies), the verification catalog, the contracts golden vectors | **v2** | Registered against the v2 `schemaHash` / `claimPathKey`s; `setRequests` is irreversible, so those pins do not move |
+
+A holder proving against a registered v2 request needs a v2 credential in their vault; a holder whose
+vault only holds v3 cannot satisfy a v2 request, because the schema hash in the proof will not match.
+Consumers that re-sync a holder onto v3 must keep that in mind until requests are re-registered on
+v3 — which is a separate decision, not implied by this file existing.
+
 ### VerilayKYC v2
 
 - Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v2.json-ld>
@@ -129,12 +168,15 @@ the same policy would have to enumerate every title in every country meaning "ba
 policy queries it. Omitting it is safe: `claimPathKey` derives from the JSON-LD context path, not
 from the JSON Schema's `required` list, so an absent field is simply not in the merklization tree.
 
+v2 is **the version every registered on-chain KYC request refers to**, and it stays published and
+byte-identical for as long as any of those requests exist. New issuance moved to [v3](#verilaykyc-v3).
+
 ### There is no VerilayKYC v1
 
 `VerilayKYC-v1.json-ld` was referenced by the issuer and the frontend before this repo existed, so
 that URL always returned 404 and **nothing valid was ever issued against it**. There is no
 back-compat to preserve and no v1 file will be published. Any credential still carrying a v1
-`credentialSchema.id` is to be reissued against v2.
+`credentialSchema.id` is to be reissued against the current issuance version.
 
 ## Vendored copies must be byte-identical
 

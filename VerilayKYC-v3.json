@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$metadata": {
+    "type": "VerilayKYC",
+    "version": "3.0",
+    "uris": {
+      "jsonLdContext": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json-ld",
+      "jsonLdType": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json-ld#VerilayKYC",
+      "jsonSchema": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json"
+    }
+  },
+  "title": "Verilay KYC Credential v3",
+  "description": "Credential asserting that Verilay's KYC provider approved the subject, together with the minimal attributes needed for on-chain policy queries and the subject's verified full name, so the person can see what a disclosure statement would share. Merklized: no iden3_serialization directive, every subject field is addressable through the merklization root.",
+  "type": "object",
+  "required": [
+    "@context",
+    "id",
+    "type",
+    "issuanceDate",
+    "credentialSubject",
+    "credentialSchema",
+    "credentialStatus",
+    "issuer"
+  ],
+  "properties": {
+    "@context": {
+      "type": [
+        "string",
+        "array",
+        "object"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": [
+        "string",
+        "array"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "issuer": {
+      "type": [
+        "string",
+        "object"
+      ],
+      "format": "uri",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "credentialSchema": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "credentialStatus": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        },
+        "revocationNonce": {
+          "type": "integer"
+        }
+      }
+    },
+    "subjectPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "merklizationRootPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "revNonce": {
+      "type": "integer"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "updatable": {
+      "type": "boolean"
+    },
+    "credentialSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kycApproved",
+        "birthday",
+        "fullName"
+      ],
+      "properties": {
+        "id": {
+          "title": "Credential Subject ID",
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "title": "Credential Subject Type",
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "kycApproved": {
+          "title": "KYC Approved",
+          "description": "True when the KYC provider returned an approved decision for this subject.",
+          "type": "boolean"
+        },
+        "documentCountry": {
+          "title": "Document Country",
+          "description": "ISO 3166-1 alpha-3 country code of the identity document used for KYC, e.g. \"DEU\". Optional: the KYC provider does not always return a country, and no policy queries it. An absent value is simply not in the merklization tree.",
+          "type": "string"
+        },
+        "birthday": {
+          "title": "Birthday",
+          "description": "Date of birth encoded as the integer YYYYMMDD, e.g. 19970517 for 1997-05-17. Integer encoding is what makes age comparisons expressible as an on-chain range query.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        },
+        "fullName": {
+          "title": "Full Name",
+          "description": "The subject's full legal name as verified by the KYC provider from the identity document, as a single display string, e.g. \"Jane Doe\". Carried so the person can see in their vault exactly what an issuer-attested disclosure statement would share with an employer, and as the substrate for selective disclosure later. Free text and hashed when merklized: equality and set-membership queries only, and no on-chain policy is expected to query it.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

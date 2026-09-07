@@ -1,0 +1,32 @@
+{
+  "_comment": "A VerilayKYC v3 credential with documentCountry absent — the shape the issuer emits when the KYC provider returns thin fixedInfo, which is common for sandbox applicants. It must validate: documentCountry is still optional in v3, while fullName is required. Not a published schema; the DIDs, the name and the credential id are placeholders.",
+  "version": 3,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json-ld"
+    ],
+    "id": "urn:uuid:b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+    "type": ["VerifiableCredential", "VerilayKYC"],
+    "issuer": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo",
+    "issuanceDate": "2026-07-29T09:15:00Z",
+    "expirationDate": "2027-07-29T09:15:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SeUqRmfL4WkPmYtdBnQxJvCgHkZaLzWmTGXpUcWL",
+      "type": "VerilayKYC",
+      "kycApproved": true,
+      "birthday": 20040229,
+      "fullName": "Max Mustermann"
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json",
+      "type": "JSONSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2ScrbBGnkRLGyDrDmoyaqNKFPVDpKptcHbHVNXHnbo/credentialStatus?revocationNonce=1188213307&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 1188213307
+    }
+  }
+}
