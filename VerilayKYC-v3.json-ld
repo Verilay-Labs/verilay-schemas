@@ -1,0 +1,37 @@
+{
+  "@context": [
+    {
+      "@version": 1.1,
+      "@protected": true,
+      "id": "@id",
+      "type": "@type",
+      "VerilayKYC": {
+        "@id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayKYC-v3.json-ld#VerilayKYC",
+        "@context": {
+          "@version": 1.1,
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "verilay-vocab": "https://github.com/Verilay-Labs/verilay-schemas/blob/main/vocab/VerilayKYC.md#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+          "kycApproved": {
+            "@id": "verilay-vocab:kycApproved",
+            "@type": "xsd:boolean"
+          },
+          "documentCountry": {
+            "@id": "verilay-vocab:documentCountry",
+            "@type": "xsd:string"
+          },
+          "birthday": {
+            "@id": "verilay-vocab:birthday",
+            "@type": "xsd:integer"
+          },
+          "fullName": {
+            "@id": "verilay-vocab:fullName",
+            "@type": "xsd:string"
+          }
+        }
+      }
+    }
+  ]
+}
