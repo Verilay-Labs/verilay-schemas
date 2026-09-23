@@ -1,0 +1,73 @@
+{
+  "@context": [
+    {
+      "@version": 1.1,
+      "@protected": true,
+      "id": "@id",
+      "type": "@type",
+      "VerilayJobHistory": {
+        "@id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld#VerilayJobHistory",
+        "@context": {
+          "@version": 1.1,
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "verilay-vocab": "https://github.com/Verilay-Labs/verilay-schemas/blob/main/vocab/VerilayJobHistory.md#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+          "companyId": {
+            "@id": "verilay-vocab:companyId",
+            "@type": "xsd:string"
+          },
+          "role": {
+            "@id": "verilay-vocab:role",
+            "@type": "xsd:string"
+          },
+          "employedFrom": {
+            "@id": "verilay-vocab:employedFrom",
+            "@type": "xsd:integer"
+          },
+          "employedTo": {
+            "@id": "verilay-vocab:employedTo",
+            "@type": "xsd:integer"
+          },
+          "employerName": {
+            "@id": "verilay-vocab:employerName",
+            "@type": "xsd:string"
+          },
+          "employerTaxId": {
+            "@id": "verilay-vocab:employerTaxId",
+            "@type": "xsd:string"
+          },
+          "contributionDays": {
+            "@id": "verilay-vocab:contributionDays",
+            "@type": "xsd:integer"
+          },
+          "sourceCaveat": {
+            "@id": "verilay-vocab:sourceCaveat",
+            "@type": "xsd:string"
+          },
+          "grade": {
+            "@id": "verilay-vocab:grade",
+            "@type": "xsd:integer"
+          },
+          "source": {
+            "@id": "verilay-vocab:source",
+            "@type": "xsd:string"
+          },
+          "verifiedAt": {
+            "@id": "verilay-vocab:verifiedAt",
+            "@type": "xsd:integer"
+          },
+          "documentHash": {
+            "@id": "verilay-vocab:documentHash",
+            "@type": "xsd:string"
+          },
+          "evidenceMethod": {
+            "@id": "verilay-vocab:evidenceMethod",
+            "@type": "xsd:string"
+          }
+        }
+      }
+    }
+  ]
+}

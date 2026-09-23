@@ -1,0 +1,49 @@
+{
+  "_comment": "NEGATIVE: documentHash as the empty string. An empty string cannot be merklized (the iden3 merklizer rejects it), so a source with no document omits the field instead. It must fail on credentialSubject.documentHash pattern and on nothing else. Not a published schema; the DIDs and the credential id are placeholders.",
+  "version": 2,
+  "expectInvalid": {
+    "reason": "documentHash empty string",
+    "errors": [
+      {
+        "instancePath": "/credentialSubject/documentHash",
+        "keyword": "pattern"
+      }
+    ]
+  },
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld"
+    ],
+    "id": "urn:uuid:f5a6b7c8-d9e0-45bc-8ad7-c4d5e6f7a8b9",
+    "type": [
+      "VerifiableCredential",
+      "VerilayDiploma"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-09-23T09:10:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Technical University of Munich",
+      "degree": "Master of Science",
+      "degreeLevel": 7,
+      "awardedAt": 20190715,
+      "grade": 2,
+      "source": "mock",
+      "verifiedAt": 20260923,
+      "evidenceMethod": "MOCK",
+      "documentHash": ""
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=2950381176&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 2950381176
+    }
+  }
+}

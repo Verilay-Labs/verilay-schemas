@@ -1,0 +1,40 @@
+{
+  "_comment": "A VerilayJobHistory v2 credential from a state record (Portugal, Segurança Social Direta) with employedTo absent (the v1 ongoing case, ported): the employment had not ended at verification. Carries the source's own caveat. It must validate. Not a published schema; the DIDs, the credential id and the document hash are placeholders.",
+  "version": 2,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld"
+    ],
+    "id": "urn:uuid:c2d3e4f5-a6b7-4289-9da4-f1a2b3c4d5e6",
+    "type": [
+      "VerifiableCredential",
+      "VerilayJobHistory"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SkPvXjLmQhRtWbYcFdGaNpEuZvKqTsMxJhCwRnBdL",
+    "issuanceDate": "2026-09-23T10:10:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayJobHistory",
+      "employedFrom": 20240902,
+      "employerName": "Exemplo Tecnologia, Lda.",
+      "employerTaxId": "501234567",
+      "sourceCaveat": "The verification code confirms the authenticity of the document, not the validity of the data in it.",
+      "grade": 5,
+      "source": "pt.ss_direta",
+      "verifiedAt": 20260923,
+      "documentHash": "3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
+      "evidenceMethod": "PORTAL_CODE_RECHECK"
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SkPvXjLmQhRtWbYcFdGaNpEuZvKqTsMxJhCwRnBdL/credentialStatus?revocationNonce=1577204389&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 1577204389
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "_comment": "A VerilayJobHistory v2 credential from the MS2 employer-attestation flow: a company registered in Verilay attested it, so companyId and role are present, grade EMPLOYER_ATTESTED (3), verifiedAt is the attestation date. Not a published schema; the DIDs, the credential id and the document hash are placeholders.",
+  "version": 2,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld"
+    ],
+    "id": "urn:uuid:a0b1c2d3-e4f5-4067-9b82-d9e0f1a2b3c4",
+    "type": [
+      "VerifiableCredential",
+      "VerilayJobHistory"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SkPvXjLmQhRtWbYcFdGaNpEuZvKqTsMxJhCwRnBdL",
+    "issuanceDate": "2026-09-23T10:00:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayJobHistory",
+      "companyId": "4d2a8f6e-91c3-4b57-a0e8-3f6c1d9b7e25",
+      "role": "Senior Backend Engineer",
+      "employedFrom": 20210301,
+      "employedTo": 20240830,
+      "employerName": "Acme GmbH",
+      "grade": 3,
+      "source": "verilay.employer_attestation",
+      "verifiedAt": 20260922,
+      "documentHash": "0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c",
+      "evidenceMethod": "EMPLOYER_ATTESTATION_SIGNED"
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SkPvXjLmQhRtWbYcFdGaNpEuZvKqTsMxJhCwRnBdL/credentialStatus?revocationNonce=4120937715&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 4120937715
+    }
+  }
+}

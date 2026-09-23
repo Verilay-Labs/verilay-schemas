@@ -4,9 +4,12 @@ Human-readable definitions for the terms used by the `VerilayDiploma` credential
 context maps each subject field to an anchor in this file via the `verilay-vocab` prefix, so
 `verilay-vocab:degreeLevel` resolves to `#degreelevel` below.
 
-This document is descriptive. The normative type of every field is the `@type` in
-[`VerilayDiploma-v1.json-ld`](../VerilayDiploma-v1.json-ld); the normative validation rules are in
-[`VerilayDiploma-v1.json`](../VerilayDiploma-v1.json).
+This document is descriptive. The normative type of every field is the `@type` in the context of the
+version being used — [`VerilayDiploma-v2.json-ld`](../VerilayDiploma-v2.json-ld) for new issuance
+(MS3 issues v2 only), [`VerilayDiploma-v1.json-ld`](../VerilayDiploma-v1.json-ld) for the frozen v1
+— and the normative validation rules are in the matching JSON Schema
+([`VerilayDiploma-v2.json`](../VerilayDiploma-v2.json),
+[`VerilayDiploma-v1.json`](../VerilayDiploma-v1.json)). A term marked **(v2)** exists only in v2.
 
 ## institution
 
@@ -79,3 +82,82 @@ Date the qualification was awarded, encoded as the integer `YYYYMMDD` — `2019-
 Integer encoding makes "graduated after X" a range query rather than an impossible string comparison.
 
 Callers must zero-pad — `20190715`, never `2019715`.
+
+## grade
+
+`xsd:integer` — **required** (v2)
+
+How strongly the source proved the credential, as an ordinal on the education scale:
+
+| Value | Grade |
+|-------|-------|
+| `4` | CRYPTO |
+| `3` | REGISTRY |
+| `2` | ISSUER |
+| `1` | APOSTILLE_ONLY |
+| `0` | UNVERIFIABLE |
+
+Higher is stronger, so "at least REGISTRY"-style requirements are range queries (`grade >= N`) that
+the on-chain verifier can evaluate, the same trick as `degreeLevel`. The scale is frozen with the
+schema version: adding, removing or reordering a grade is a new version.
+
+`UNVERIFIABLE` (`0`) completes the ordering but **no credential is ever issued at 0** — a request
+that cannot be verified ends without a credential. A `grade >= 0` policy would accept anything, which
+is a self-declaration and needs no issuer.
+
+## source
+
+`xsd:string` — **required** (v2)
+
+Identifier of the verification source that produced the grade — the issuer's source-adapter id, e.g.
+`br.diploma_digital`, `registry.pe.sunedu`, or a finer source name where one adapter covers several. Equality and set-membership
+queries only.
+
+## verifiedAt
+
+`xsd:integer` — **required** (v2)
+
+Date the verification concluded, as `YYYYMMDD`. Integer, so "verified since" is a range query.
+Callers must zero-pad.
+
+## documentHash
+
+`xsd:string` — **optional** (v2)
+
+SHA-256 of the evidence document's bytes exactly as submitted to the issuer, as 64 lowercase hex
+characters. It binds the credential to the document that was verified without disclosing the
+document.
+
+**Absent when the source had no document to hash — never the empty string.** The iden3 merklizer
+cannot merklize an empty string value, so a credential carrying `documentHash: ""` could never be
+issued or proven; the JSON Schema rejects it. Lowercase only, so that equality is byte equality.
+
+## evidenceMethod
+
+`xsd:string` — **required** (v2)
+
+How the evidence was checked, e.g. `XADES_ICP_BRASIL_OFFLINE`, `PORTAL_CODE_RECHECK`,
+`OPERATOR_PORTAL_CHECK`, `EMPLOYER_ATTESTATION_SIGNED`. It distinguishes an automated check from an
+operator-resolved one at the same grade. Equality and set-membership queries only.
+
+## institutionCode
+
+`xsd:string` — **optional** (v2)
+
+The awarding institution's identifier in the source's own registry — the e-MEC IES code for a
+Brazilian diploma, or the registry's institution id. Only sources with an institution registry
+provide one. Meaningful only together with `source`: two registries' codes are not comparable.
+
+## courseCode
+
+`xsd:string` — **optional** (v2)
+
+The course or programme's identifier in the source's own registry, e.g. the e-MEC course code. Only
+sources with a course registry provide one. Meaningful only together with `source`.
+
+## accreditationSnapshotAt
+
+`xsd:integer` — **optional** (v2)
+
+Date of the accreditation snapshot the institution and course were checked against (e.g. the e-MEC
+sync), as `YYYYMMDD`. Present only when the source checks accreditation. Integer, so range queries.
