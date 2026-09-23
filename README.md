@@ -95,6 +95,11 @@ removing or reordering a grade is a new schema version.
 `UNVERIFIABLE` (0) is on the scale so that the ordering is complete, but **no credential is issued at
 0** (DM3-03): a request that cannot be verified ends without a credential.
 
+Every free-text string field that is new in v2 (`source`, `evidenceMethod`, `employerName`,
+`employerTaxId`, `sourceCaveat`, `institutionCode`, `courseCode`) sets `minLength: 1`. An optional
+value the source did not give is **left out**, never sent as `""`. That is the same rule as
+`documentHash`, and the reason is the same: an empty string cannot be merklized.
+
 ### VerilayJobHistory v2
 
 - Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld>
@@ -291,6 +296,11 @@ node scripts/roundtrip.mjs     # a sample credential validates, then expands wit
 `fixtures/` holds sample credentials shaped the way the issuers emit them — including one per type
 with its optional fields absent, which is the case that is easy to get wrong and expensive to
 discover late. They are test inputs, not published documents.
+
+The v2 fixtures spell `credentialSchema.type` as `JsonSchema2023`, the term the iden3 proofs context
+defines and the js-sdk emits. The older fixtures spell it `JSONSchema2023`. The JSON Schema check and
+the expansion check accept that spelling, but the iden3 merklizer rejects it in safe mode as a relative
+`@type`, so copy the v2 spelling. The older fixtures are test inputs and are left as they are.
 
 A fixture carrying `expectInvalid` is a **negative** fixture: it must be rejected by its JSON Schema
 with exactly the listed errors and no others. Matching the whole error list keeps a negative fixture
