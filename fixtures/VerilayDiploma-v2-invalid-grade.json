@@ -1,0 +1,53 @@
+{
+  "_comment": "NEGATIVE: grade 5 is above the education scale (CRYPTO=4 is the top). It must fail on credentialSubject.grade maximum and on nothing else. Not a published schema; the DIDs, the credential id and the document hash are placeholders.",
+  "version": 2,
+  "expectInvalid": {
+    "reason": "grade above the education scale",
+    "errors": [
+      {
+        "instancePath": "/credentialSubject/grade",
+        "keyword": "maximum"
+      }
+    ]
+  },
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld"
+    ],
+    "id": "urn:uuid:8e9fa0b1-c2d3-4e45-bf60-b7c8d9e0f1a2",
+    "type": [
+      "VerifiableCredential",
+      "VerilayDiploma"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-09-23T09:00:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Universidade de São Paulo",
+      "degree": "Bacharel em Ciência da Computação",
+      "degreeLevel": 6,
+      "fieldOfStudy": "Ciência da Computação",
+      "awardedAt": 20231215,
+      "grade": 5,
+      "source": "br.diploma_digital",
+      "verifiedAt": 20260923,
+      "documentHash": "9f2c4e7a1b3d5f60718293a4b5c6d7e8f9012a3b4c5d6e7f8091a2b3c4d5e6f7",
+      "evidenceMethod": "XADES_ICP_BRASIL_OFFLINE",
+      "institutionCode": "55",
+      "courseCode": "1234567",
+      "accreditationSnapshotAt": 20260920
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=3811950261&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 3811950261
+    }
+  }
+}

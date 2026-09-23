@@ -1,0 +1,53 @@
+{
+  "_comment": "NEGATIVE: documentHash in uppercase hex. The hash is lowercase so that equality is byte equality; it must fail on credentialSubject.documentHash pattern and on nothing else. Not a published schema; the DIDs, the credential id and the document hash are placeholders.",
+  "version": 2,
+  "expectInvalid": {
+    "reason": "documentHash not lowercase hex",
+    "errors": [
+      {
+        "instancePath": "/credentialSubject/documentHash",
+        "keyword": "pattern"
+      }
+    ]
+  },
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld"
+    ],
+    "id": "urn:uuid:9fa0b1c2-d3e4-4f56-8a71-c8d9e0f1a2b3",
+    "type": [
+      "VerifiableCredential",
+      "VerilayDiploma"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-09-23T09:00:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Universidade de São Paulo",
+      "degree": "Bacharel em Ciência da Computação",
+      "degreeLevel": 6,
+      "fieldOfStudy": "Ciência da Computação",
+      "awardedAt": 20231215,
+      "grade": 4,
+      "source": "br.diploma_digital",
+      "verifiedAt": 20260923,
+      "documentHash": "9F2C4E7A1B3D5F60718293A4B5C6D7E8F9012A3B4C5D6E7F8091A2B3C4D5E6F7",
+      "evidenceMethod": "XADES_ICP_BRASIL_OFFLINE",
+      "institutionCode": "55",
+      "courseCode": "1234567",
+      "accreditationSnapshotAt": 20260920
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=3811950261&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 3811950261
+    }
+  }
+}

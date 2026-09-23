@@ -1,0 +1,73 @@
+{
+  "@context": [
+    {
+      "@version": 1.1,
+      "@protected": true,
+      "id": "@id",
+      "type": "@type",
+      "VerilayDiploma": {
+        "@id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld#VerilayDiploma",
+        "@context": {
+          "@version": 1.1,
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "verilay-vocab": "https://github.com/Verilay-Labs/verilay-schemas/blob/main/vocab/VerilayDiploma.md#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+          "institution": {
+            "@id": "verilay-vocab:institution",
+            "@type": "xsd:string"
+          },
+          "degree": {
+            "@id": "verilay-vocab:degree",
+            "@type": "xsd:string"
+          },
+          "degreeLevel": {
+            "@id": "verilay-vocab:degreeLevel",
+            "@type": "xsd:integer"
+          },
+          "fieldOfStudy": {
+            "@id": "verilay-vocab:fieldOfStudy",
+            "@type": "xsd:string"
+          },
+          "awardedAt": {
+            "@id": "verilay-vocab:awardedAt",
+            "@type": "xsd:integer"
+          },
+          "grade": {
+            "@id": "verilay-vocab:grade",
+            "@type": "xsd:integer"
+          },
+          "source": {
+            "@id": "verilay-vocab:source",
+            "@type": "xsd:string"
+          },
+          "verifiedAt": {
+            "@id": "verilay-vocab:verifiedAt",
+            "@type": "xsd:integer"
+          },
+          "documentHash": {
+            "@id": "verilay-vocab:documentHash",
+            "@type": "xsd:string"
+          },
+          "evidenceMethod": {
+            "@id": "verilay-vocab:evidenceMethod",
+            "@type": "xsd:string"
+          },
+          "institutionCode": {
+            "@id": "verilay-vocab:institutionCode",
+            "@type": "xsd:string"
+          },
+          "courseCode": {
+            "@id": "verilay-vocab:courseCode",
+            "@type": "xsd:string"
+          },
+          "accreditationSnapshotAt": {
+            "@id": "verilay-vocab:accreditationSnapshotAt",
+            "@type": "xsd:integer"
+          }
+        }
+      }
+    }
+  ]
+}

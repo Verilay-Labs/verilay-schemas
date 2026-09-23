@@ -1,0 +1,39 @@
+{
+  "_comment": "A VerilayDiploma v2 credential with only the required fields: documentHash is absent, which is how a source with no document to hash (here the mock provider) is expressed. It must validate, and documentHash must be absent from the expansion. Not a published schema; the DIDs and the credential id are placeholders.",
+  "version": 2,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld"
+    ],
+    "id": "urn:uuid:7d8e9fa0-b1c2-4d34-ae5f-a6b7c8d9e0f1",
+    "type": [
+      "VerifiableCredential",
+      "VerilayDiploma"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-09-23T09:10:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Technical University of Munich",
+      "degree": "Master of Science",
+      "degreeLevel": 7,
+      "awardedAt": 20190715,
+      "grade": 2,
+      "source": "mock",
+      "verifiedAt": 20260923,
+      "evidenceMethod": "MOCK"
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=2950381176&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 2950381176
+    }
+  }
+}

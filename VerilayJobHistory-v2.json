@@ -1,0 +1,242 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$metadata": {
+    "type": "VerilayJobHistory",
+    "version": "2.0",
+    "uris": {
+      "jsonLdContext": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld",
+      "jsonLdType": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld#VerilayJobHistory",
+      "jsonSchema": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json"
+    }
+  },
+  "title": "Verilay Job History Credential v2",
+  "description": "Credential asserting the subject's employment: which employer, over which dates, and optionally in what role \u2014 plus how it was verified: the grade on the employment scale, the source, the date, the evidence method and the hash of the evidence document. The employer is either a company registered in Verilay that attested it (companyId present) or an employer named on a state employment record (companyId absent). Only the former can gate review submission, because companyId is the join key between the credential and the reviews registry. Merklized: no iden3_serialization directive, every subject field is addressable through the merklization root.",
+  "type": "object",
+  "required": [
+    "@context",
+    "id",
+    "type",
+    "issuanceDate",
+    "credentialSubject",
+    "credentialSchema",
+    "credentialStatus",
+    "issuer"
+  ],
+  "properties": {
+    "@context": {
+      "type": [
+        "string",
+        "array",
+        "object"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": [
+        "string",
+        "array"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "issuer": {
+      "type": [
+        "string",
+        "object"
+      ],
+      "format": "uri",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "credentialSchema": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "credentialStatus": {
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        },
+        "revocationNonce": {
+          "type": "integer"
+        }
+      }
+    },
+    "subjectPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "merklizationRootPosition": {
+      "type": "string",
+      "enum": [
+        "none",
+        "index",
+        "value"
+      ]
+    },
+    "revNonce": {
+      "type": "integer"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "updatable": {
+      "type": "boolean"
+    },
+    "credentialSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "employerName",
+        "employedFrom",
+        "grade",
+        "source",
+        "verifiedAt",
+        "evidenceMethod"
+      ],
+      "properties": {
+        "id": {
+          "title": "Credential Subject ID",
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "title": "Credential Subject Type",
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "companyId": {
+          "title": "Company ID",
+          "description": "The attesting company's Verilay account user_uuid, in canonical lowercase 8-4-4-4-12 hyphenated form. This is the identifier verilay-user-service exposes on the public business record and the one the reviews registry keys on \u2014 not a company name, domain or display label. String, so it supports equality and set-membership queries ($eq, $in, $nin) only. Optional in v2: present when a company registered in Verilay attested the employment, absent on a credential from a state employment record, which names an employer but not a Verilay account. Only a credential carrying companyId can gate a review.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "role": {
+          "title": "Role",
+          "description": "Job title as attested, as free text, e.g. \"Senior Backend Engineer\". Display and review-template use; string, so equality and set-membership queries only. Optional in v2: state employment records do not assert a role.",
+          "type": "string",
+          "minLength": 1
+        },
+        "employedFrom": {
+          "title": "Employed From",
+          "description": "First day of the employment period, encoded as the integer YYYYMMDD, e.g. 20210301. Integer encoding is what makes tenure and date-window checks expressible as on-chain range queries.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        },
+        "employedTo": {
+          "title": "Employed To",
+          "description": "Last day of the employment period, encoded as the integer YYYYMMDD. Optional: absent means the employment had not ended according to the source at verification time. A policy that needs \"employment has ended\" must handle absence explicitly \u2014 claimPathNotExists is part of the queryHash for exactly this case.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        },
+        "employerName": {
+          "title": "Employer Name",
+          "description": "The employer's name as the source states it: the attesting company's name in Verilay, or the employer named on the state employment record, e.g. \"Acme Iberia S.L.\". A display string, not a join key \u2014 companyId is the join key where present. Equality and set-membership queries only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "employerTaxId": {
+          "title": "Employer Tax ID",
+          "description": "The employer's tax identifier as the source record states it, e.g. a Spanish NIF/CIF or a Portuguese NIPC. Optional: sources that do not state one omit it. Equality and set-membership queries only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "contributionDays": {
+          "title": "Contribution Days",
+          "description": "Number of social-insurance contribution days the source record attributes to this employment. Optional: only sources that state it provide it. Integer, so range queries.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceCaveat": {
+          "title": "Source Caveat",
+          "description": "A limitation the source itself places on what its verification proves, e.g. that a verification code confirms the authenticity of the document but not the validity of the data in it. Optional; display only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "grade": {
+          "title": "Grade",
+          "description": "How strongly the source proved this employment, as an ordinal integer on the employment scale: CRYPTO=6, SOCIAL_INSURANCE=5, PAYROLL=4, EMPLOYER_ATTESTED=3, GIG_PLATFORM=2, APOSTILLE_ONLY=1, UNVERIFIABLE=0. Higher is stronger, so \"at least\" a grade is an on-chain range query (grade >= N), the same way degreeLevel works. UNVERIFIABLE (0) is part of the scale but no credential is ever issued at 0: a request that cannot be verified ends without a credential. The scale is frozen with this schema version; adding, removing or reordering a grade is a new schema version.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "source": {
+          "title": "Source",
+          "description": "Identifier of the verification source that produced the grade, e.g. \"es.vida_laboral\" \u2014 the issuer's source-adapter id, or a finer source name where one adapter covers several. Equality and set-membership queries only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "verifiedAt": {
+          "title": "Verified At",
+          "description": "Date the verification concluded, encoded as the integer YYYYMMDD, e.g. 20260923. Integer encoding makes \"verified since\" a range query.",
+          "type": "integer",
+          "minimum": 10000101,
+          "maximum": 99991231
+        },
+        "documentHash": {
+          "title": "Document Hash",
+          "description": "SHA-256 of the evidence document's bytes exactly as submitted to the issuer, as 64 lowercase hex characters. Binds the credential to the document that was verified without disclosing it. Optional: absent when the source had no document to hash \u2014 never the empty string, which cannot be merklized. Equality queries only.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidenceMethod": {
+          "title": "Evidence Method",
+          "description": "How the evidence was checked, e.g. XADES_ICP_BRASIL_OFFLINE, PORTAL_CODE_RECHECK, OPERATOR_PORTAL_CHECK, EMPLOYER_ATTESTATION_SIGNED. Distinguishes an automated check from an operator-resolved one at the same grade. Equality and set-membership queries only.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

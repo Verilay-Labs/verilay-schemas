@@ -66,6 +66,26 @@ for (const file of readdirSync(join(REPO, "fixtures")).sort()) {
   const schema = read(schemaFile);
 
   const validate = ajv.compile(schema);
+
+  // A negative fixture must be rejected for exactly the documented reason. Matching the whole error
+  // list, not just "it failed", keeps a fixture from passing because of some unrelated breakage that
+  // hides the constraint it exists to prove.
+  if (fixture.expectInvalid) {
+    const expected = fixture.expectInvalid.errors;
+    const valid = validate(credential);
+    const actual = (validate.errors ?? []).map((e) => ({
+      instancePath: e.instancePath,
+      keyword: e.keyword,
+      ...(e.params.missingProperty && { missingProperty: e.params.missingProperty }),
+    }));
+    check(
+      !valid && JSON.stringify(actual) === JSON.stringify(expected),
+      `${file}: expected ${schemaFile} to reject it for "${fixture.expectInvalid.reason}" ` +
+        `(${JSON.stringify(expected)}), got ${valid ? "valid" : JSON.stringify(actual)}`,
+    );
+    continue;
+  }
+
   check(
     validate(credential),
     `${file}: fails ${schemaFile}: ${ajv.errorsText(validate.errors)}`,

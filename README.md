@@ -58,9 +58,81 @@ subject field is addressable through the merklization root rather than being pac
 slots.
 
 Dates are integers in `YYYYMMDD` form throughout (`birthday`, `employedFrom`, `employedTo`,
-`awardedAt`). That is not cosmetic: an integer can be range-queried on chain, and a hashed string can
-only be tested for equality and set membership. Any field a policy needs to compare with `<` or `>`
-has to be an integer here, and choosing wrong is unfixable without a new schema version.
+`awardedAt`, `verifiedAt`, `accreditationSnapshotAt`). That is not cosmetic: an integer can be
+range-queried on chain, and a hashed string can only be tested for equality and set membership. Any
+field a policy needs to compare with `<` or `>` has to be an integer here, and choosing wrong is
+unfixable without a new schema version.
+
+### Diploma and JobHistory: v1 is frozen, MS3 issues v2 only
+
+`VerilayDiploma-v2` and `VerilayJobHistory-v2` add **how the credential was verified** to what it
+asserts. MS3 issues v2 only; v1 stays published and byte-identical but nothing new is issued against
+it (DM3-02: a hard cut, with no dual support and no migration).
+
+Both v2 types carry the same five verification fields:
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `grade` | `xsd:integer` | yes | Ordinal on the credential family's scale (below); integer ⇒ "at least REGISTRY" is `grade >= 3` |
+| `source` | `xsd:string` | yes | The issuer's source-adapter id, e.g. `br.diploma_digital`, `es.vida_laboral`, `verilay.employer_attestation` |
+| `verifiedAt` | `xsd:integer` | yes | `YYYYMMDD` the verification concluded |
+| `documentHash` | `xsd:string` | no | Lowercase hex SHA-256 of the evidence document as submitted; **absent** when the source had no document, never `""` (the merklizer cannot merklize an empty string) |
+| `evidenceMethod` | `xsd:string` | yes | How the evidence was checked, e.g. `XADES_ICP_BRASIL_OFFLINE`, `PORTAL_CODE_RECHECK`, `OPERATOR_PORTAL_CHECK`, `EMPLOYER_ATTESTATION_SIGNED` |
+
+The grade scales are per family and frozen in each schema's `grade` description (DM3-01). Adding,
+removing or reordering a grade is a new schema version.
+
+| Education (`VerilayDiploma`) | `grade` | Employment (`VerilayJobHistory`) | `grade` |
+|---|---|---|---|
+| CRYPTO | 4 | CRYPTO | 6 |
+| REGISTRY | 3 | SOCIAL_INSURANCE | 5 |
+| ISSUER | 2 | PAYROLL | 4 |
+| APOSTILLE_ONLY | 1 | EMPLOYER_ATTESTED | 3 |
+| UNVERIFIABLE | 0 | GIG_PLATFORM | 2 |
+| | | APOSTILLE_ONLY | 1 |
+| | | UNVERIFIABLE | 0 |
+
+`UNVERIFIABLE` (0) is on the scale so that the ordering is complete, but **no credential is issued at
+0** (DM3-03): a request that cannot be verified ends without a credential.
+
+### VerilayJobHistory v2
+
+- Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld>
+- JSON Schema: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json>
+- Type IRI: `https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayJobHistory-v2.json-ld#VerilayJobHistory`
+- Vocabulary: [`vocab/VerilayJobHistory.md`](vocab/VerilayJobHistory.md)
+
+The employer is either a company registered in Verilay that attested the employment (`companyId`
+present), or an employer named on a state employment record such as Spain's Vida Laboral
+(`companyId` absent). v1's fields plus the five verification fields, and:
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `companyId` | `xsd:string` | **no** (was yes) | As v1; absent on a state-record credential |
+| `role` | `xsd:string` | **no** (was yes) | As v1; state records do not assert a role |
+| `employerName` | `xsd:string` | yes | The employer as the source names it; display string, not a join key |
+| `employerTaxId` | `xsd:string` | no | NIF/CIF, NIPC, as the source states it |
+| `contributionDays` | `xsd:integer` | no | Social-insurance contribution days the record attributes to this employment |
+| `sourceCaveat` | `xsd:string` | no | A limitation the source places on what it proves; display only |
+
+⚠️ **Only a credential carrying `companyId` can gate a review** (DM3-04): the reviews registry keys on
+it, and a state record names an employer, not a Verilay account. Linking a state-record credential to a
+company by tax id is M4 work.
+
+### VerilayDiploma v2
+
+- Context: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld>
+- JSON Schema: <https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json>
+- Type IRI: `https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld#VerilayDiploma`
+- Vocabulary: [`vocab/VerilayDiploma.md`](vocab/VerilayDiploma.md)
+
+v1's fields unchanged, plus the five verification fields, and:
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `institutionCode` | `xsd:string` | no | The institution's id in the source's registry, e.g. the e-MEC IES code |
+| `courseCode` | `xsd:string` | no | The course's id in the source's registry, e.g. the e-MEC course code |
+| `accreditationSnapshotAt` | `xsd:integer` | no | `YYYYMMDD` of the accreditation snapshot checked against |
 
 ### VerilayJobHistory v1
 
@@ -219,6 +291,10 @@ node scripts/roundtrip.mjs     # a sample credential validates, then expands wit
 `fixtures/` holds sample credentials shaped the way the issuers emit them — including one per type
 with its optional fields absent, which is the case that is easy to get wrong and expensive to
 discover late. They are test inputs, not published documents.
+
+A fixture carrying `expectInvalid` is a **negative** fixture: it must be rejected by its JSON Schema
+with exactly the listed errors and no others. Matching the whole error list keeps a negative fixture
+from passing because of some unrelated breakage that hides the constraint it exists to prove.
 
 After changing or adding a document, regenerate the manifest:
 

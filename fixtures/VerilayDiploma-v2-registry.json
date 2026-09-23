@@ -1,0 +1,41 @@
+{
+  "_comment": "A VerilayDiploma v2 credential confirmed against a national degree registry, grade REGISTRY (3). fieldOfStudy, courseCode and accreditationSnapshotAt are absent (the v1 no-field case, ported): a registry without course or accreditation data gives neither, and it must validate. Not a published schema; the DIDs, the credential id and the document hash are placeholders.",
+  "version": 2,
+  "credential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json-ld"
+    ],
+    "id": "urn:uuid:6c7d8e9f-a0b1-4c23-9d4e-f5a6b7c8d9e0",
+    "type": [
+      "VerifiableCredential",
+      "VerilayDiploma"
+    ],
+    "issuer": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP",
+    "issuanceDate": "2026-09-23T09:05:00Z",
+    "credentialSubject": {
+      "id": "did:iden3:eth:sepolia:2SdBEXqYHQJvBEbMTzKC6dHfCwYtcaLzWmTGXpUcWL",
+      "type": "VerilayDiploma",
+      "institution": "Universidad Nacional Mayor de San Marcos",
+      "degree": "Bachiller en Ingeniería de Sistemas",
+      "degreeLevel": 6,
+      "awardedAt": 20180420,
+      "grade": 3,
+      "source": "registry.pe.sunedu",
+      "verifiedAt": 20260923,
+      "documentHash": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "evidenceMethod": "PORTAL_CODE_RECHECK",
+      "institutionCode": "0001"
+    },
+    "credentialSchema": {
+      "id": "https://raw.githubusercontent.com/Verilay-Labs/verilay-schemas/main/VerilayDiploma-v2.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "did:iden3:eth:sepolia:2SmTqWkNbXcVdRfGhJyUpZaLsEtMxQnCwKrBvDgFhP/credentialStatus?revocationNonce=1740263598&contractAddress=11155111:0x1234567890123456789012345678901234567890",
+      "type": "Iden3OnchainSparseMerkleTreeProof2023",
+      "revocationNonce": 1740263598
+    }
+  }
+}
